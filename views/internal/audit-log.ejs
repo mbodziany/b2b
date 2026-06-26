@@ -1,0 +1,30 @@
+<%- include('../partials/head', { title: 'Dziennik zdarzeń' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <h1>Dziennik zdarzeń</h1>
+    <table class="table">
+      <thead>
+        <tr><th>Data i czas</th><th>Wykonał</th><th>Zdarzenie</th><th>Obiekt</th><th>Przychodnia</th><th>IP</th></tr>
+      </thead>
+      <tbody>
+        <% entries.forEach(function(entry) { %>
+          <tr>
+            <td><%= new Date(entry.createdAt).toLocaleString('pl-PL') %></td>
+            <td><%= entry.actor ? entry.actor.fullName + ' (' + entry.actor.email + ')' : '—' %></td>
+            <td><%= entry.action %></td>
+            <td><%= entry.entityType ? entry.entityType + ' / ' + entry.entityId : '—' %></td>
+            <td><%= entry.clinicId || '—' %></td>
+            <td><%= entry.ipAddress || '—' %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <% if (page > 1) { %><a href="/internal/audit-log?page=<%= page - 1 %>">&larr; Wcześniejsze</a><% } %>
+      <span class="text-muted">Strona <%= page %> z <%= totalPages %></span>
+      <% if (page < totalPages) { %><a href="/internal/audit-log?page=<%= page + 1 %>">Następne &rarr;</a><% } %>
+    </div>
+  </div>
+</main>
+<%- include('../partials/footer') %>

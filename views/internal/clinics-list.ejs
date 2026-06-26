@@ -1,0 +1,39 @@
+<%- include('../partials/head', { title: 'Przychodnie' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <div class="section-heading">
+      <h1>Przychodnie</h1>
+      <a class="btn btn--primary" href="/internal/clinics/new">Dodaj przychodnię</a>
+    </div>
+    <table class="table">
+      <thead>
+        <tr><th>Nazwa</th><th>NIP</th><th>Adres</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% clinics.forEach(function(clinic) { %>
+          <tr id="<%= clinic.id %>">
+            <td><%= clinic.name %></td>
+            <td><%= clinic.taxId %></td>
+            <td><%= clinic.address || '—' %></td>
+            <td><span class="badge <%= clinic.isActive ? 'badge--active' : 'badge--blocked' %>"><%= clinic.isActive ? 'Aktywna' : 'Zablokowana' %></span></td>
+            <td>
+              <% if (clinic.isActive) { %>
+                <form method="post" action="/internal/clinics/<%= clinic.id %>/block">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button type="submit" class="btn btn--small btn--danger">Zablokuj</button>
+                </form>
+              <% } else { %>
+                <form method="post" action="/internal/clinics/<%= clinic.id %>/unblock">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button type="submit" class="btn btn--small btn--primary">Odblokuj</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</main>
+<%- include('../partials/footer') %>

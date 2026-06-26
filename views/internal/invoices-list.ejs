@@ -1,0 +1,27 @@
+<%- include('../partials/head', { title: 'Faktury' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <div class="section-heading">
+      <h1>Faktury</h1>
+      <a class="btn btn--primary" href="/internal/invoices/new">Dodaj fakturę</a>
+    </div>
+    <table class="table">
+      <thead>
+        <tr><th>Numer faktury</th><th>Przychodnia</th><th>Data wystawienia</th><th>Kwota</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% invoices.forEach(function(invoice) { %>
+          <tr>
+            <td><%= invoice.invoiceNumber %></td>
+            <td><%= invoice.clinic.name %></td>
+            <td><%= new Date(invoice.issueDate).toLocaleDateString('pl-PL') %></td>
+            <td><%= invoice.totalAmount %> <%= invoice.currency %></td>
+            <td><a href="/internal/invoices/<%= invoice.id %>">Szczegóły</a></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</main>
+<%- include('../partials/footer') %>

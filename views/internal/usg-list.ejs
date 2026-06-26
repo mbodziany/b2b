@@ -1,0 +1,27 @@
+<%- include('../partials/head', { title: 'Badania USG' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <div class="section-heading">
+      <h1>Badania USG</h1>
+      <a class="btn btn--primary" href="/internal/usg/new">Dodaj badanie</a>
+    </div>
+    <table class="table">
+      <thead>
+        <tr><th>Przychodnia</th><th>Data badania</th><th>Typ badania</th><th>Wykonujący</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% exams.forEach(function(exam) { %>
+          <tr>
+            <td><%= exam.clinic.name %></td>
+            <td><%= new Date(exam.examDate).toLocaleDateString('pl-PL') %></td>
+            <td><%= exam.examType %></td>
+            <td><%= exam.performedBy %></td>
+            <td><a href="/internal/usg/<%= exam.id %>">Szczegóły</a></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</main>
+<%- include('../partials/footer') %>

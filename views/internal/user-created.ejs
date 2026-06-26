@@ -1,0 +1,15 @@
+<%- include('../partials/head', { title: 'Konto utworzone' }) %>
+<%- include('../partials/nav') %>
+<main class="container container--narrow">
+  <div class="card">
+    <h1>Konto gotowe</h1>
+    <p class="alert alert--success">Konto dla <strong><%= user.email %></strong> zostało utworzone/zresetowane.</p>
+    <p class="alert alert--info">
+      Tymczasowe hasło (zapisz je teraz — nie zostanie ponownie wyświetlone):<br>
+      <code><%= temporaryPassword %></code>
+    </p>
+    <p class="text-muted">Przekaż je użytkownikowi bezpiecznym kanałem (np. telefonicznie). Przy pierwszym logowaniu użytkownik zostanie poproszony o ustawienie własnego hasła oraz skonfigurowanie uwierzytelniania dwuetapowego.</p>
+    <p><a href="/internal/users/<%= user.id %>">Przejdź do szczegółów konta</a></p>
+  </div>
+</main>
+<%- include('../partials/footer') %>

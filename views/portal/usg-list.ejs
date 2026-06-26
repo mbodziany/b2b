@@ -1,0 +1,25 @@
+<%- include('../partials/head', { title: 'Badania USG' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <h1>Badania USG</h1>
+    <% if (exams.length === 0) { %>
+      <p>Brak badań do wyświetlenia.</p>
+    <% } else { %>
+      <table class="table">
+        <thead><tr><th>Data badania</th><th>Typ badania</th><th>Wykonujący</th><th></th></tr></thead>
+        <tbody>
+          <% exams.forEach(function(exam) { %>
+            <tr>
+              <td><%= new Date(exam.examDate).toLocaleDateString('pl-PL') %></td>
+              <td><%= exam.examType %></td>
+              <td><%= exam.performedBy %></td>
+              <td><a href="/portal/usg/<%= exam.id %>">Szczegóły</a></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</main>
+<%- include('../partials/footer') %>

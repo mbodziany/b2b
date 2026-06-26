@@ -1,0 +1,27 @@
+<%- include('../partials/head', { title: 'Faktury' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <h1>Faktury</h1>
+    <% if (invoices.length === 0) { %>
+      <p>Brak faktur do wyświetlenia.</p>
+    <% } else { %>
+      <table class="table">
+        <thead>
+          <tr><th>Numer faktury</th><th>Data wystawienia</th><th>Kwota</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% invoices.forEach(function(invoice) { %>
+            <tr>
+              <td><%= invoice.invoiceNumber %></td>
+              <td><%= new Date(invoice.issueDate).toLocaleDateString('pl-PL') %></td>
+              <td><%= invoice.totalAmount %> <%= invoice.currency %></td>
+              <td><a href="/portal/invoices/<%= invoice.id %>">Szczegóły</a></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</main>
+<%- include('../partials/footer') %>

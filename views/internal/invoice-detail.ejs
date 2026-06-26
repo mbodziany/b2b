@@ -1,0 +1,105 @@
+<%- include('../partials/head', { title: 'Faktura ' + invoice.invoiceNumber }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <h1>Faktura <%= invoice.invoiceNumber %></h1>
+    <p>Przychodnia: <%= invoice.clinic.name %></p>
+    <p>Data wystawienia: <%= new Date(invoice.issueDate).toLocaleDateString('pl-PL') %></p>
+    <p>Kwota łączna: <strong><%= invoice.totalAmount %> <%= invoice.currency %></strong></p>
+  </div>
+
+  <div class="card">
+    <h2>Zlecone usługi</h2>
+    <% if (error) { %><p class="alert alert--error"><%= error %></p><% } %>
+    <% if (serviceItems.length > 0) { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Pacjent (ref.)</th><th>Kod usługi</th><th>Nazwa usługi</th><th>Data</th><th>Ilość</th><th>Cena jedn.</th><th>Kwota</th><th>Uwagi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% serviceItems.forEach(function(item) { %>
+            <tr>
+              <td><%= item.patientReference %></td>
+              <td><%= item.serviceCode %></td>
+              <td><%= item.serviceName %></td>
+              <td><%= new Date(item.serviceDate).toLocaleDateString('pl-PL') %></td>
+              <td><%= item.quantity %></td>
+              <td><%= item.unitPrice %></td>
+              <td><%= item.amount %></td>
+              <td><%= item.notes || '' %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+    <h3>Dodaj pozycję</h3>
+    <form method="post" action="/internal/invoices/<%= invoice.id %>/items" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="patientReference">Pacjent (ref.)</label>
+          <input type="text" id="patientReference" name="patientReference" required>
+        </div>
+        <div class="form-group">
+          <label for="serviceCode">Kod usługi</label>
+          <input type="text" id="serviceCode" name="serviceCode" required>
+        </div>
+        <div class="form-group">
+          <label for="serviceName">Nazwa usługi</label>
+          <input type="text" id="serviceName" name="serviceName" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="serviceDate">Data wykonania</label>
+          <input type="date" id="serviceDate" name="serviceDate" required>
+        </div>
+        <div class="form-group">
+          <label for="quantity">Ilość</label>
+          <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+        </div>
+        <div class="form-group">
+          <label for="unitPrice">Cena jedn.</label>
+          <input type="number" id="unitPrice" name="unitPrice" step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="amount">Kwota</label>
+          <input type="number" id="amount" name="amount" step="0.01" min="0" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="notes">Uwagi (opcjonalnie)</label>
+        <input type="text" id="notes" name="notes">
+      </div>
+      <button type="submit" class="btn btn--primary">Dodaj pozycję</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Załączniki</h2>
+    <% if (invoice.attachments.length > 0) { %>
+      <ul class="file-list">
+        <% invoice.attachments.forEach(function(att) { %>
+          <li>
+            <span><%= att.fileName %></span>
+            <span class="file-meta">(<%= Math.round(att.fileSizeBytes / 1024) %> KB, dodano <%= new Date(att.uploadedAt).toLocaleString('pl-PL') %>)</span>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+    <h3>Dodaj załącznik</h3>
+    <form method="post" action="/internal/invoices/<%= invoice.id %>/attachments" enctype="multipart/form-data" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-group">
+        <label for="file">Plik (PDF, JPG lub PNG, maks. 25 MB)</label>
+        <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+      </div>
+      <button type="submit" class="btn btn--primary">Wgraj załącznik</button>
+    </form>
+  </div>
+
+  <p><a href="/internal/invoices">&larr; Powrót do listy faktur</a></p>
+</main>
+<%- include('../partials/footer') %>

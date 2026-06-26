@@ -1,0 +1,39 @@
+<%- include('../partials/head', { title: 'Użytkownicy' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <div class="section-heading">
+      <h1>Użytkownicy</h1>
+      <a class="btn btn--primary" href="/internal/users/new">Dodaj użytkownika</a>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Imię i nazwisko</th><th>E-mail</th><th>Rola</th><th>Przychodnia</th><th>Uprawnienia</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(function(u) { %>
+          <tr>
+            <td><%= u.fullName %></td>
+            <td><%= u.email %></td>
+            <td><%= u.role %></td>
+            <td><%= u.clinic ? u.clinic.name : '—' %></td>
+            <td>
+              <% if (u.role === 'CLINIC_USER') { %>
+                <%= u.canViewInvoices ? 'Faktury' : '' %><%= u.canViewInvoices && u.canViewUsg ? ', ' : '' %><%= u.canViewUsg ? 'USG' : '' %><%= (!u.canViewInvoices && !u.canViewUsg) ? '—' : '' %>
+              <% } else { %>
+                —
+              <% } %>
+            </td>
+            <td>
+              <span class="badge <%= u.isActive ? 'badge--active' : 'badge--blocked' %>"><%= u.isActive ? 'Aktywny' : 'Zablokowany' %></span>
+            </td>
+            <td><a href="/internal/users/<%= u.id %>">Szczegóły</a></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</main>
+<%- include('../partials/footer') %>

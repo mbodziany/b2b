@@ -1,0 +1,57 @@
+<%- include('../partials/head', { title: 'Faktura ' + invoice.invoiceNumber }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <h1>Faktura <%= invoice.invoiceNumber %></h1>
+    <p>Data wystawienia: <%= new Date(invoice.issueDate).toLocaleDateString('pl-PL') %></p>
+    <p>Kwota łączna: <strong><%= invoice.totalAmount %> <%= invoice.currency %></strong></p>
+  </div>
+
+  <div class="card">
+    <h2>Zlecone usługi</h2>
+    <% if (serviceItems.length === 0) { %>
+      <p>Brak pozycji szczegółowych dla tej faktury.</p>
+    <% } else { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Pacjent (ref.)</th><th>Kod usługi</th><th>Nazwa usługi</th><th>Data</th><th>Ilość</th><th>Cena jedn.</th><th>Kwota</th><th>Uwagi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% serviceItems.forEach(function(item) { %>
+            <tr>
+              <td><%= item.patientReference %></td>
+              <td><%= item.serviceCode %></td>
+              <td><%= item.serviceName %></td>
+              <td><%= new Date(item.serviceDate).toLocaleDateString('pl-PL') %></td>
+              <td><%= item.quantity %></td>
+              <td><%= item.unitPrice %></td>
+              <td><%= item.amount %></td>
+              <td><%= item.notes || '' %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <div class="card">
+    <h2>Załączniki</h2>
+    <% if (invoice.attachments.length === 0) { %>
+      <p>Brak załączników.</p>
+    <% } else { %>
+      <ul class="file-list">
+        <% invoice.attachments.forEach(function(att) { %>
+          <li>
+            <a href="/portal/invoices/<%= invoice.id %>/attachments/<%= att.id %>/download"><%= att.fileName %></a>
+            <span class="file-meta">(<%= Math.round(att.fileSizeBytes / 1024) %> KB)</span>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </div>
+
+  <p><a href="/portal/invoices">&larr; Powrót do listy faktur</a></p>
+</main>
+<%- include('../partials/footer') %>

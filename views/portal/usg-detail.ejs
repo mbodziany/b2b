@@ -1,0 +1,38 @@
+<%- include('../partials/head', { title: 'Badanie USG' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <h1>Badanie USG — <%= exam.examType %></h1>
+    <p>Pacjent (ref.): <%= exam.patientReference %></p>
+    <p>Data badania: <%= new Date(exam.examDate).toLocaleDateString('pl-PL') %></p>
+    <p>Wykonujący: <%= exam.performedBy %></p>
+    <h2>Opis badania</h2>
+    <p class="description"><%= exam.description %></p>
+  </div>
+
+  <div class="card">
+    <h2>Obrazy</h2>
+    <% if (images.length === 0) { %>
+      <p>Brak obrazów dla tego badania.</p>
+    <% } else { %>
+      <ul class="file-list">
+        <% images.forEach(function(image) { %>
+          <li>
+            <% if (image.mimeType.startsWith('image/')) { %>
+              <a href="/portal/usg/<%= exam.id %>/images/<%= image.id %>/download" class="image-thumb-link">
+                <img src="/portal/usg/<%= exam.id %>/images/<%= image.id %>/download" alt="<%= image.fileName %>" class="image-thumb">
+              </a>
+            <% } %>
+            <div>
+              <a href="/portal/usg/<%= exam.id %>/images/<%= image.id %>/download"><%= image.fileName %></a>
+              <span class="file-meta">(<%= Math.round(image.fileSizeBytes / 1024) %> KB)</span>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </div>
+
+  <p><a href="/portal/usg">&larr; Powrót do listy badań</a></p>
+</main>
+<%- include('../partials/footer') %>

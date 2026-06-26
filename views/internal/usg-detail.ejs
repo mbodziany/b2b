@@ -1,0 +1,39 @@
+<%- include('../partials/head', { title: 'Badanie USG' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <h1>Badanie USG — <%= exam.examType %></h1>
+    <p>Przychodnia: <%= clinicName %></p>
+    <p>Pacjent (ref.): <%= exam.patientReference %></p>
+    <p>Data badania: <%= new Date(exam.examDate).toLocaleDateString('pl-PL') %></p>
+    <p>Wykonujący: <%= exam.performedBy %></p>
+    <h2>Opis badania</h2>
+    <p class="description"><%= exam.description %></p>
+  </div>
+
+  <div class="card">
+    <h2>Obrazy</h2>
+    <% if (images.length > 0) { %>
+      <ul class="file-list">
+        <% images.forEach(function(image) { %>
+          <li>
+            <span><%= image.fileName %></span>
+            <span class="file-meta">(<%= Math.round(image.fileSizeBytes / 1024) %> KB, dodano <%= new Date(image.uploadedAt).toLocaleString('pl-PL') %>)</span>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+    <h3>Dodaj obraz</h3>
+    <form method="post" action="/internal/usg/<%= exam.id %>/images" enctype="multipart/form-data" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-group">
+        <label for="file">Plik (JPG, PNG lub PDF, maks. 25 MB)</label>
+        <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+      </div>
+      <button type="submit" class="btn btn--primary">Wgraj obraz</button>
+    </form>
+  </div>
+
+  <p><a href="/internal/usg">&larr; Powrót do listy badań</a></p>
+</main>
+<%- include('../partials/footer') %>
