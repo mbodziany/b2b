@@ -1,0 +1,44 @@
+<%- include('../partials/head', { title: 'Nowe badanie USG' }) %>
+<%- include('../partials/nav') %>
+<main class="container container--narrow">
+  <div class="card">
+    <h1>Dodaj badanie USG</h1>
+    <% if (error) { %><p class="alert alert--error"><%= error %></p><% } %>
+    <form method="post" action="/internal/usg" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-group">
+        <label for="clinicId">Przychodnia</label>
+        <select id="clinicId" name="clinicId" required>
+          <option value="">— wybierz przychodnię —</option>
+          <% clinics.forEach(function(clinic) { %>
+            <option value="<%= clinic.id %>"><%= clinic.name %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="patientReference">Pacjent (ref.)</label>
+        <input type="text" id="patientReference" name="patientReference" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="examDate">Data badania</label>
+          <input type="date" id="examDate" name="examDate" required>
+        </div>
+        <div class="form-group">
+          <label for="examType">Typ badania</label>
+          <input type="text" id="examType" name="examType" required>
+        </div>
+        <div class="form-group">
+          <label for="performedBy">Wykonujący</label>
+          <input type="text" id="performedBy" name="performedBy" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="description">Opis badania</label>
+        <textarea id="description" name="description" rows="6" required></textarea>
+      </div>
+      <button type="submit" class="btn btn--primary">Dodaj badanie</button>
+    </form>
+  </div>
+</main>
+<%- include('../partials/footer') %>

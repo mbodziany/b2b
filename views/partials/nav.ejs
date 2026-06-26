@@ -1,0 +1,26 @@
+<header class="topbar">
+  <div class="topbar__brand">Portal B2B</div>
+  <% if (typeof user !== 'undefined' && user) { %>
+    <nav class="topbar__nav">
+      <% if (user.role === 'CLINIC_USER') { %>
+        <a href="/portal">Pulpit</a>
+        <% if (user.canViewInvoices) { %><a href="/portal/invoices">Faktury</a><% } %>
+        <% if (user.canViewUsg) { %><a href="/portal/usg">Badania USG</a><% } %>
+      <% } else { %>
+        <a href="/internal">Pulpit</a>
+        <a href="/internal/invoices">Faktury</a>
+        <a href="/internal/usg">Badania USG</a>
+        <% if (user.role === 'INTERNAL_ADMIN') { %>
+          <a href="/internal/users">Użytkownicy</a>
+          <a href="/internal/clinics">Przychodnie</a>
+          <a href="/internal/audit-log">Dziennik zdarzeń</a>
+        <% } %>
+      <% } %>
+    </nav>
+    <form method="post" action="/logout" class="topbar__logout">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <span class="topbar__user"><%= user.fullName %></span>
+      <button type="submit">Wyloguj</button>
+    </form>
+  <% } %>
+</header>

@@ -1,0 +1,40 @@
+<%- include('../partials/head', { title: 'Nowa faktura' }) %>
+<%- include('../partials/nav') %>
+<main class="container container--narrow">
+  <div class="card">
+    <h1>Dodaj fakturę</h1>
+    <% if (error) { %><p class="alert alert--error"><%= error %></p><% } %>
+    <form method="post" action="/internal/invoices" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-group">
+        <label for="clinicId">Przychodnia</label>
+        <select id="clinicId" name="clinicId" required>
+          <option value="">— wybierz przychodnię —</option>
+          <% clinics.forEach(function(clinic) { %>
+            <option value="<%= clinic.id %>"><%= clinic.name %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="invoiceNumber">Numer faktury</label>
+        <input type="text" id="invoiceNumber" name="invoiceNumber" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="issueDate">Data wystawienia</label>
+          <input type="date" id="issueDate" name="issueDate" required>
+        </div>
+        <div class="form-group">
+          <label for="totalAmount">Kwota łączna</label>
+          <input type="number" id="totalAmount" name="totalAmount" step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="currency">Waluta</label>
+          <input type="text" id="currency" name="currency" value="PLN">
+        </div>
+      </div>
+      <button type="submit" class="btn btn--primary">Dodaj fakturę</button>
+    </form>
+  </div>
+</main>
+<%- include('../partials/footer') %>

@@ -1,0 +1,18 @@
+<%- include('../partials/head', { title: 'Panel wewnętrzny' }) %>
+<%- include('../partials/nav') %>
+<main class="container">
+  <div class="card">
+    <h1>Witaj, <%= user.fullName %></h1>
+    <p class="text-muted">Rola: <%= user.role === 'INTERNAL_ADMIN' ? 'Administrator' : 'Pracownik' %></p>
+    <ul class="tile-list">
+      <li><a class="tile" href="/internal/invoices">Faktury</a></li>
+      <li><a class="tile" href="/internal/usg">Badania USG</a></li>
+      <% if (user.role === 'INTERNAL_ADMIN') { %>
+        <li><a class="tile" href="/internal/users">Użytkownicy</a></li>
+        <li><a class="tile" href="/internal/clinics">Przychodnie</a></li>
+        <li><a class="tile" href="/internal/audit-log">Dziennik zdarzeń</a></li>
+      <% } %>
+    </ul>
+  </div>
+</main>
+<%- include('../partials/footer') %>

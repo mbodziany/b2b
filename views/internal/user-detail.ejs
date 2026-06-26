@@ -1,0 +1,55 @@
+<%- include('../partials/head', { title: 'Użytkownik — ' + targetUser.fullName }) %>
+<%- include('../partials/nav') %>
+<main class="container container--narrow">
+  <div class="card">
+    <h1><%= targetUser.fullName %></h1>
+    <p>E-mail: <%= targetUser.email %></p>
+    <p>Rola: <%= targetUser.role %></p>
+    <% if (targetUser.clinicId) { %><p>ID przychodni: <code><%= targetUser.clinicId %></code></p><% } %>
+    <p>Status: <span class="badge <%= targetUser.isActive ? 'badge--active' : 'badge--blocked' %>"><%= targetUser.isActive ? 'Aktywny' : 'Zablokowany' %></span></p>
+    <p>MFA: <%= targetUser.mfaEnabled ? 'skonfigurowane' : 'nieskonfigurowane' %></p>
+    <p>Ostatnie logowanie: <%= targetUser.lastLoginAt ? new Date(targetUser.lastLoginAt).toLocaleString('pl-PL') : 'nigdy' %></p>
+  </div>
+
+  <% if (targetUser.role === 'CLINIC_USER') { %>
+    <div class="card">
+      <h2>Uprawnienia do danych</h2>
+      <form method="post" action="/internal/users/<%= targetUser.id %>/permissions" class="form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="form-group form-group--checkbox">
+          <input type="checkbox" id="canViewInvoices" name="canViewInvoices" <%= targetUser.canViewInvoices ? 'checked' : '' %>>
+          <label for="canViewInvoices">Może przeglądać faktury i załączniki</label>
+        </div>
+        <div class="form-group form-group--checkbox">
+          <input type="checkbox" id="canViewUsg" name="canViewUsg" <%= targetUser.canViewUsg ? 'checked' : '' %>>
+          <label for="canViewUsg">Może przeglądać badania USG</label>
+        </div>
+        <button type="submit" class="btn btn--primary">Zapisz uprawnienia</button>
+      </form>
+    </div>
+  <% } %>
+
+  <div class="card">
+    <h2>Zarządzanie kontem</h2>
+    <div class="btn-group">
+      <% if (targetUser.isActive) { %>
+        <form method="post" action="/internal/users/<%= targetUser.id %>/block">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="btn btn--danger">Zablokuj dostęp</button>
+        </form>
+      <% } else { %>
+        <form method="post" action="/internal/users/<%= targetUser.id %>/unblock">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="btn btn--primary">Odblokuj dostęp</button>
+        </form>
+      <% } %>
+      <form method="post" action="/internal/users/<%= targetUser.id %>/reset-password">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" class="btn">Zresetuj hasło</button>
+      </form>
+    </div>
+  </div>
+
+  <p><a href="/internal/users">&larr; Powrót do listy użytkowników</a></p>
+</main>
+<%- include('../partials/footer') %>

@@ -1,0 +1,10 @@
+<%- include('partials/head', { title: title }) %>
+<%- include('partials/nav') %>
+<main class="container container--narrow">
+  <div class="card">
+    <h1><%= statusCode %></h1>
+    <p><%= message %></p>
+    <p><a href="/login">Powrót do logowania</a></p>
+  </div>
+</main>
+<%- include('partials/footer') %>

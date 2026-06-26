@@ -1,0 +1,46 @@
+<%- include('../partials/head', { title: 'Nowy użytkownik' }) %>
+<%- include('../partials/nav') %>
+<main class="container container--narrow">
+  <div class="card">
+    <h1>Dodaj użytkownika</h1>
+    <% if (error) { %><p class="alert alert--error"><%= error %></p><% } %>
+    <form method="post" action="/internal/users" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-group">
+        <label for="email">Adres e-mail</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="fullName">Imię i nazwisko</label>
+        <input type="text" id="fullName" name="fullName" required minlength="2">
+      </div>
+      <div class="form-group">
+        <label for="role">Rola</label>
+        <select id="role" name="role" required>
+          <option value="CLINIC_USER">Użytkownik przychodni</option>
+          <option value="INTERNAL_STAFF">Pracownik (po naszej stronie)</option>
+          <option value="INTERNAL_ADMIN">Administrator (po naszej stronie)</option>
+        </select>
+      </div>
+      <div class="form-group" id="clinic-field-group">
+        <label for="clinicId">Przychodnia</label>
+        <select id="clinicId" name="clinicId">
+          <option value="">— wybierz przychodnię —</option>
+          <% clinics.forEach(function(clinic) { %>
+            <option value="<%= clinic.id %>"><%= clinic.name %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group form-group--checkbox" id="permissions-field-group">
+        <input type="checkbox" id="canViewInvoices" name="canViewInvoices">
+        <label for="canViewInvoices">Może przeglądać faktury i załączniki</label>
+      </div>
+      <div class="form-group form-group--checkbox">
+        <input type="checkbox" id="canViewUsg" name="canViewUsg">
+        <label for="canViewUsg">Może przeglądać badania USG</label>
+      </div>
+      <button type="submit" class="btn btn--primary">Utwórz konto</button>
+    </form>
+  </div>
+</main>
+<%- include('../partials/footer') %>

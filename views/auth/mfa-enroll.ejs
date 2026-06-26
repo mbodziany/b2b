@@ -1,0 +1,20 @@
+<%- include('../partials/head', { title: 'Konfiguracja MFA' }) %>
+<%- include('../partials/nav') %>
+<main class="container container--narrow">
+  <div class="card">
+    <h1>Skonfiguruj uwierzytelnianie dwuetapowe</h1>
+    <p>Logowanie do portalu wymaga aplikacji uwierzytelniającej (np. Google Authenticator, Microsoft Authenticator, Authy). Zeskanuj kod QR poniżej.</p>
+    <img src="<%= qrCodeDataUrl %>" alt="Kod QR do konfiguracji MFA" class="qr-code">
+    <p class="text-muted">Jeśli nie możesz zeskanować kodu, wpisz ten klucz ręcznie w aplikacji: <code><%= secret %></code></p>
+    <% if (error) { %><p class="alert alert--error"><%= error %></p><% } %>
+    <form method="post" action="/mfa/enroll" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-group">
+        <label for="token">Kod z aplikacji (6 cyfr)</label>
+        <input type="text" id="token" name="token" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autocomplete="one-time-code">
+      </div>
+      <button type="submit" class="btn btn--primary">Potwierdź i włącz MFA</button>
+    </form>
+  </div>
+</main>
+<%- include('../partials/footer') %>

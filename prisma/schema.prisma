@@ -1,0 +1,187 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  INTERNAL_ADMIN
+  INTERNAL_STAFF
+  CLINIC_USER
+}
+
+enum AuditAction {
+  LOGIN_SUCCESS
+  LOGIN_FAILURE
+  ACCOUNT_LOCKED
+  LOGOUT
+  PASSWORD_CHANGED
+  MFA_ENROLLED
+  MFA_VERIFIED
+  MFA_FAILED
+  CLINIC_CREATED
+  CLINIC_BLOCKED
+  CLINIC_UNBLOCKED
+  USER_CREATED
+  USER_BLOCKED
+  USER_UNBLOCKED
+  USER_PERMISSIONS_CHANGED
+  USER_PASSWORD_RESET
+  INVOICE_CREATED
+  INVOICE_VIEWED
+  INVOICE_ATTACHMENT_UPLOADED
+  INVOICE_ATTACHMENT_DOWNLOADED
+  USG_EXAM_CREATED
+  USG_EXAM_VIEWED
+  USG_IMAGE_UPLOADED
+  USG_IMAGE_DOWNLOADED
+  ACCESS_DENIED
+}
+
+model Clinic {
+  id        String   @id @default(uuid())
+  name      String
+  taxId     String   @unique
+  address   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users    User[]
+  invoices Invoice[]
+  usgExams UsgExam[]
+
+  @@map("clinics")
+}
+
+model User {
+  id                  String    @id @default(uuid())
+  clinicId            String?
+  clinic              Clinic?   @relation(fields: [clinicId], references: [id])
+  email               String    @unique
+  passwordHash        String
+  fullName            String
+  role                UserRole
+  canViewUsg          Boolean   @default(false)
+  canViewInvoices     Boolean   @default(false)
+  isActive            Boolean   @default(true)
+  mustChangePassword  Boolean   @default(true)
+  mfaSecretEncrypted  String?
+  mfaEnabled          Boolean   @default(false)
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
+  createdById         String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  auditLogs AuditLog[] @relation("ActorAuditLogs")
+
+  @@map("users")
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  clinicId      String
+  clinic        Clinic   @relation(fields: [clinicId], references: [id])
+  invoiceNumber String
+  issueDate     DateTime
+  totalAmount   Decimal  @db.Decimal(12, 2)
+  currency      String   @default("PLN")
+  createdById   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  serviceItems InvoiceServiceItem[]
+  attachments  InvoiceAttachment[]
+
+  @@unique([clinicId, invoiceNumber])
+  @@map("invoices")
+}
+
+model InvoiceServiceItem {
+  id                        String   @id @default(uuid())
+  invoiceId                 String
+  invoice                   Invoice  @relation(fields: [invoiceId], references: [id])
+  patientReferenceEncrypted String
+  serviceCode               String
+  serviceName               String
+  serviceDate               DateTime
+  quantity                  Int      @default(1)
+  unitPrice                 Decimal  @db.Decimal(12, 2)
+  amount                    Decimal  @db.Decimal(12, 2)
+  notes                     String?
+  createdAt                 DateTime @default(now())
+
+  @@map("invoice_service_items")
+}
+
+model InvoiceAttachment {
+  id             String   @id @default(uuid())
+  invoiceId      String
+  invoice        Invoice  @relation(fields: [invoiceId], references: [id])
+  fileName       String
+  storageKey     String   @unique
+  mimeType       String
+  fileSizeBytes  Int
+  checksumSha256 String
+  uploadedById   String
+  uploadedAt     DateTime @default(now())
+
+  @@map("invoice_attachments")
+}
+
+model UsgExam {
+  id                        String   @id @default(uuid())
+  clinicId                  String
+  clinic                    Clinic   @relation(fields: [clinicId], references: [id])
+  patientReferenceEncrypted String
+  examDate                  DateTime
+  examType                  String
+  performedBy               String
+  description               String
+  createdById                String
+  createdAt                 DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  images UsgImage[]
+
+  @@map("usg_exams")
+}
+
+model UsgImage {
+  id             String   @id @default(uuid())
+  usgExamId      String
+  usgExam        UsgExam  @relation(fields: [usgExamId], references: [id])
+  fileName       String
+  storageKey     String   @unique
+  mimeType       String
+  fileSizeBytes  Int
+  checksumSha256 String
+  uploadedById   String
+  uploadedAt     DateTime @default(now())
+
+  @@map("usg_images")
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  actorId    String?
+  actor      User?       @relation("ActorAuditLogs", fields: [actorId], references: [id])
+  action     AuditAction
+  entityType String?
+  entityId   String?
+  clinicId   String?
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime    @default(now())
+
+  @@index([actorId])
+  @@index([clinicId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
